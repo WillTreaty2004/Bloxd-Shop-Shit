@@ -154,7 +154,7 @@
 });
 
 <span class="cmt">// Listen for purchases</span>
-<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+<span class="fn">onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
   <span class="kw">if</span> (itemKey === <span class="str">"ironSword"</span>) {
     giveItem(playerId, <span class="str">"Iron Sword"</span>, <span class="num">1</span>);
   }
@@ -265,7 +265,7 @@
   excludedPlayers: [<span class="str">"-3"</span>]   <span class="cmt">// optional: playerIds to hide from the list</span>
 }</pre>
       <h3>Accessing Input in Callback</h3>
-      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
   <span class="kw">if</span> (itemKey === <span class="str">"renameThing"</span>) {
     rename(playerId, userInput); <span class="cmt">// userInput = whatever the player typed/selected</span>
   }
@@ -442,7 +442,7 @@ description: <span class="str">"A simple description."</span></pre>
           <tr><td>userInput</td><td><span class="badge badge-type">string?</span></td><td>The text/selection from userInput if configured</td></tr>
         </tbody>
       </table>
-      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
   <span class="kw">switch</span>(itemKey) {
     <span class="kw">case</span> <span class="str">"healthPotion"</span>:
       healPlayer(playerId, <span class="num">50</span>);
@@ -667,7 +667,7 @@ description: <span class="str">"A simple description."</span></pre>
   userInput: { type: <span class="str">"player"</span>, excludedPlayers: [myPlayerId] }
 });
 
-<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+<span class="fn">onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
   <span class="kw">if</span> (itemKey === <span class="str">"disbandTribe"</span>) disbandTribe(playerId);
   <span class="kw">if</span> (itemKey === <span class="str">"invitePlayer"</span>) inviteToTribe(playerId, userInput);
 };</pre>
@@ -691,7 +691,7 @@ description: <span class="str">"A simple description."</span></pre>
   }
 });
 
-<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+<span class="fn">onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
   <span class="kw">if</span> (itemKey === <span class="str">"createTribe"</span>) {
     createTribe(playerId, userInput); <span class="cmt">// userInput = the tribe name</span>
   }
