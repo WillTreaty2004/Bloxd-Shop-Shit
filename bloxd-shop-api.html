@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloxd.io Shop API Docs</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+  .sidebar { width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .sidebar-logo h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .sidebar-logo span { color: var(--accent); }
+  .sidebar-logo p { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+  .nav-section { padding: 0 12px; margin-bottom: 8px; }
+  .nav-section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 8px 4px; }
+  .nav-link { display: block; padding: 7px 10px; border-radius: 6px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+  .nav-link:hover, .nav-link.active { color: var(--accent); background: rgba(0,229,255,0.07); }
+  .main { flex: 1; padding: 40px 48px; max-width: 1000px; }
+  .section { display: none; animation: fadeIn 0.2s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  h2 { font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
+  h2 .highlight { color: var(--accent); }
+  .section-desc { color: var(--muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
+  h3 { font-size: 16px; font-weight: 700; margin: 28px 0 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.3px; }
+  p { font-size: 14px; line-height: 1.7; color: #94a3b8; margin-bottom: 12px; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0 20px; position: relative; }
+  pre .copy-btn { position: absolute; top: 10px; right: 10px; background: var(--border); border: none; color: var(--muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+  pre .copy-btn:hover { background: var(--accent); color: #000; }
+  code { font-family: 'JetBrains Mono', monospace; }
+  .kw { color: #ff79c6; } .fn { color: #50fa7b; } .str { color: #f1fa8c; } .num { color: #bd93f9; } .cmt { color: #6272a4; } .key { color: #8be9fd; }
+  .param-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 24px; }
+  .param-table th { text-align: left; padding: 8px 12px; background: var(--surface2); color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 400; }
+  .param-table th:first-child { border-radius: 6px 0 0 6px; } .param-table th:last-child { border-radius: 0 6px 6px 0; }
+  .param-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; font-family: 'JetBrains Mono', monospace; color: #94a3b8; }
+  .param-table td:first-child { color: var(--accent); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .badge-opt { background: rgba(100,116,139,0.2); color: var(--muted); }
+  .badge-req { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .badge-type { background: rgba(124,58,237,0.2); color: #a78bfa; }
+  .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; transition: border-color 0.2s; }
+  .method-card:hover { border-color: rgba(0,229,255,0.3); }
+  .method-sig { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent3); margin-bottom: 8px; font-weight: 700; }
+  .method-desc { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 0; }
+  .tag-row { display: flex; gap: 6px; margin: 10px 0 0; flex-wrap: wrap; }
+  .builder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+  .builder-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .builder-panel h4 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+  .form-group label span.req { color: var(--danger); } .form-group label span.opt { color: var(--muted); font-size: 10px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 13px; font-family: 'JetBrains Mono', monospace; outline: none; transition: border-color 0.15s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group input[type="checkbox"] { width: auto; }
+  .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; cursor: pointer; font-family: 'JetBrains Mono', monospace; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .output-panel { grid-column: 1 / -1; background: var(--code-bg); border: 1px solid var(--border); border-left: 3px solid var(--accent3); border-radius: 10px; padding: 20px; position: relative; }
+  .output-panel h4 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent3); margin-bottom: 12px; }
+  #generatedCode { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: var(--text); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-family: 'JetBrains Mono', monospace; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00b8d4; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .alert { border-radius: 8px; padding: 14px 18px; font-size: 13px; line-height: 1.5; margin: 12px 0; font-family: 'JetBrains Mono', monospace; }
+  .alert-info { background: rgba(0,229,255,0.07); border-left: 3px solid var(--accent); color: #7ecfdc; }
+  .alert-warn { background: rgba(245,158,11,0.07); border-left: 3px solid var(--warn); color: #d4a017; }
+  .alert-success { background: rgba(16,185,129,0.07); border-left: 3px solid var(--accent3); color: #6db99d; }
+  .input-type-fields { margin-top: 10px; display: none; }
+  .input-type-fields.show { display: block; }
+  .section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
+  .section-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .icon-blue { background: rgba(0,229,255,0.1); } .icon-purple { background: rgba(124,58,237,0.1); } .icon-green { background: rgba(16,185,129,0.1); } .icon-orange { background: rgba(245,158,11,0.1); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  select option { background: var(--surface); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <h1>Bloxd<span>.</span>io</h1>
+      <p>// Shop API v1</p>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a class="nav-link active" onclick="show('overview',this)">Overview</a>
+      <a class="nav-link" onclick="show('concepts',this)">Core Concepts</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Shop Items</div>
+      <a class="nav-link" onclick="show('shopitem-props',this)">ShopItem Properties</a>
+      <a class="nav-link" onclick="show('userinput',this)">userInput Types</a>
+      <a class="nav-link" onclick="show('textstyling',this)">CustomTextStyling</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Methods</div>
+      <a class="nav-link" onclick="show('global-methods',this)">Global Methods</a>
+      <a class="nav-link" onclick="show('player-methods',this)">Per-Player Methods</a>
+      <a class="nav-link" onclick="show('category-config',this)">Category Config</a>
+      <a class="nav-link" onclick="show('callbacks',this)">Callbacks</a>
+      <a class="nav-link" onclick="show('openShop',this)">openShop()</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Tools</div>
+      <a class="nav-link" onclick="show('builder',this)">⚡ Item Builder</a>
+      <a class="nav-link" onclick="show('examples',this)">Examples</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div id="overview" class="section active">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🛒</div>
+        <div>
+          <h2>Shop <span class="highlight">API</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Control the in-game shop (opened with <strong>B</strong>) to create purchasable items, collectibles, menus, and player-specific experiences.</p>
+        </div>
+      </div>
+      <div class="alert alert-info">📌 The shop is opened in-game by pressing <strong>B</strong>. You can control categories, items, pricing, user input, and per-player overrides entirely through scripts.</div>
+      <h3>Quick Start</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// Create a simple item in a category</span>
+<span class="fn">api.createShopItem</span>(<span class="str">"myGame:shop"</span>, <span class="str">"ironSword"</span>, {
+  image: <span class="str">"Iron Sword"</span>,
+  customTitle: <span class="str">"Iron Sword"</span>,
+  description: <span class="str">"A trusty iron sword."</span>,
+  cost: <span class="num">100</span>,
+  currency: <span class="str">"Gold Coin"</span>,
+  canBuy: <span class="kw">true</span>,
+  onBoughtMessage: <span class="str">"You got an Iron Sword!"</span>
+});
+
+<span class="cmt">// Listen for purchases</span>
+<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+  <span class="kw">if</span> (itemKey === <span class="str">"ironSword"</span>) {
+    giveItem(playerId, <span class="str">"Iron Sword"</span>, <span class="num">1</span>);
+  }
+};</pre>
+      <h3>Key Points</h3>
+      <ul style="font-size:14px; color:#94a3b8; line-height:2.2; padding-left:20px;">
+        <li>Categories are auto-created when you call <code>createShopItem</code></li>
+        <li>Per-player overrides let you show different items/prices to different players</li>
+        <li><code>createShopItem</code> replaces any existing item with the same key</li>
+        <li><code>userInput</code> lets players type text, pick from a dropdown, or select a player</li>
+        <li>Items can be hidden, flagged with red dots, or given "new" / "lucky" badges</li>
+      </ul>
+    </div>
+
+    <!-- CONCEPTS -->
+    <div id="concepts" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-purple">🧠</div>
+        <div>
+          <h2>Core <span class="highlight">Concepts</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Understand keys, categories, and the override system.</p>
+        </div>
+      </div>
+      <h3>CategoryKey & ItemKey</h3>
+      <p>Both are plain strings. Convention is to namespace them like <code>"gameMode:section"</code> to avoid collisions with other systems.</p>
+      <pre><code><span class="cmt">// Examples of keys</span>
+<span class="str">"classicGame:utilities"</span>   <span class="cmt">// built-in bloxd category</span>
+<span class="str">"myGame:weapons"</span>          <span class="cmt">// custom category</span>
+<span class="str">"myGame:cosmetics"</span></code></pre>
+      <h3>Override Priority</h3>
+      <p>When a player opens the shop, item properties are resolved in this order (highest wins):</p>
+      <div style="display:flex; gap:0; margin:12px 0 20px; font-family:'JetBrains Mono',monospace; font-size:13px;">
+        <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); padding:12px 18px; border-radius:8px 0 0 8px; flex:1; text-align:center;">Per-player override<br><span style="color:var(--muted);font-size:11px;">highest</span></div>
+        <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-left:none; padding:12px 18px; flex:1; text-align:center;">Global item<br><span style="color:var(--muted);font-size:11px;">default</span></div>
+        <div style="background:rgba(100,116,139,0.08); border:1px solid var(--border); border-left:none; padding:12px 18px; border-radius:0 8px 8px 0; flex:1; text-align:center;">Engine defaults<br><span style="color:var(--muted);font-size:11px;">lowest</span></div>
+      </div>
+      <h3>Item Lifecycle</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// 1. Create global item (all players see it)</span>
+<span class="fn">api.createShopItem</span>(categoryKey, itemKey, item);
+
+<span class="cmt">// 2. Override for a specific player</span>
+<span class="fn">api.updateShopItemForPlayer</span>(playerId, categoryKey, itemKey, { cost: <span class="num">50</span> });
+
+<span class="cmt">// 3. Reset the player back to the global version</span>
+<span class="fn">api.resetShopItemForPlayer</span>(playerId, categoryKey, itemKey);
+
+<span class="cmt">// 4. Remove the global item (also removes all player overrides)</span>
+<span class="fn">api.deleteShopItem</span>(categoryKey, itemKey);</pre>
+    </div>
+
+    <!-- SHOPITEM PROPS -->
+    <div id="shopitem-props" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-blue">📦</div>
+        <div>
+          <h2>ShopItem <span class="highlight">Properties</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Every property you can set on a shop item object.</p>
+        </div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>image</td><td><span class="badge badge-type">string</span></td><td><span class="badge badge-req">required</span></td><td>Block name ("Dirt") or image path ("spawnicon.png" or URL)</td></tr>
+          <tr><td>cost</td><td><span class="badge badge-type">number</span></td><td><span class="badge badge-opt">optional</span></td><td>Price of the item. Omit for free items.</td></tr>
+          <tr><td>currency</td><td><span class="badge badge-type">string</span></td><td><span class="badge badge-opt">optional</span></td><td>Currency name e.g. "Gold Coin"</td></tr>
+          <tr><td>amount</td><td><span class="badge badge-type">number</span></td><td><span class="badge badge-opt">optional</span></td><td>Quantity or amount shown</td></tr>
+          <tr><td>imageColour</td><td><span class="badge badge-type">string</span></td><td><span class="badge badge-opt">optional</span></td><td>CSS color tint over the image e.g. "springgreen", "#FF4500"</td></tr>
+          <tr><td>canBuy</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Enables the buy button</td></tr>
+          <tr><td>isSelected</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Highlights item as currently equipped/selected</td></tr>
+          <tr><td>customTitle</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td><span class="badge badge-opt">optional</span></td><td>Display name (defaults to itemKey)</td></tr>
+          <tr><td>description</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td><span class="badge badge-opt">optional</span></td><td>Description shown in item detail panel</td></tr>
+          <tr><td>buyButtonText</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td><span class="badge badge-opt">optional</span></td><td>Label on the buy button</td></tr>
+          <tr><td>onBoughtMessage</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td><span class="badge badge-opt">optional</span></td><td>Message shown to player after buying</td></tr>
+          <tr><td>redDot</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Show notification red dot on the item tile</td></tr>
+          <tr><td>forceRemoveRedDot</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Force-removes a red dot even if set elsewhere</td></tr>
+          <tr><td>badge</td><td><span class="badge badge-type">{ text, type }</span></td><td><span class="badge badge-opt">optional</span></td><td>Badge on item. type: "new" | "lucky"</td></tr>
+          <tr><td>userInput</td><td><span class="badge badge-type">ShopItemUserInput</span></td><td><span class="badge badge-opt">optional</span></td><td>Prompt player for input before purchase</td></tr>
+          <tr><td>sell</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Whether item can be sold back</td></tr>
+          <tr><td>sortPriority</td><td><span class="badge badge-type">number</span></td><td><span class="badge badge-opt">optional</span></td><td>Higher = appears earlier in list</td></tr>
+          <tr><td>hidden</td><td><span class="badge badge-type">boolean</span></td><td><span class="badge badge-opt">optional</span></td><td>Hides item from the shop view</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- USER INPUT -->
+    <div id="userinput" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-purple">⌨️</div>
+        <div>
+          <h2>userInput <span class="highlight">Types</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Collect data from the player before they confirm a purchase.</p>
+        </div>
+      </div>
+      <h3>Text Input</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button>userInput: {
+  type: <span class="str">"text"</span>,
+  placeholderText: <span class="str">"Enter a name..."</span>,  <span class="cmt">// optional</span>
+  wordCharsOnly: <span class="kw">true</span>               <span class="cmt">// optional, restrict to word chars</span>
+}</pre>
+      <h3>Dropdown</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button>userInput: {
+  type: <span class="str">"dropdown"</span>,
+  dropdownOptions: [<span class="str">"Option A"</span>, <span class="str">"Option B"</span>, <span class="str">"Option C"</span>]
+}</pre>
+      <h3>Player Selector</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button>userInput: {
+  type: <span class="str">"player"</span>,
+  excludedPlayers: [<span class="str">"-3"</span>]   <span class="cmt">// optional: playerIds to hide from the list</span>
+}</pre>
+      <h3>Accessing Input in Callback</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+  <span class="kw">if</span> (itemKey === <span class="str">"renameThing"</span>) {
+    rename(playerId, userInput); <span class="cmt">// userInput = whatever the player typed/selected</span>
+  }
+};</pre>
+    </div>
+
+    <!-- CUSTOM TEXT STYLING -->
+    <div id="textstyling" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-orange">🎨</div>
+        <div>
+          <h2>CustomText<span class="highlight">Styling</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Rich, mixed-content text for titles, descriptions, and button labels.</p>
+        </div>
+      </div>
+      <p>Instead of a plain string, text fields accept an array of segments — each can be a string, a translation key, or an icon.</p>
+      <h3>Segment Types</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// Translation key only</span>
+customTitle: [{ translationKey: <span class="str">"tribe:createTribe"</span> }]
+
+<span class="cmt">// Mix of translated text + icon + plain string</span>
+buyButtonText: [
+  { str: { translationKey: <span class="str">"general:create"</span> } },
+  { str: <span class="str">": "</span> },
+  { icon: <span class="str">"Iron Bar"</span> },
+  { str: <span class="str">" 2"</span> }
+]
+
+<span class="cmt">// Plain string still works everywhere</span>
+description: <span class="str">"A simple description."</span></pre>
+      <div class="alert alert-info">💡 Mix translated keys and plain strings in the same array for fully localized rich text UI.</div>
+    </div>
+
+    <!-- GLOBAL METHODS -->
+    <div id="global-methods" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-green">🌐</div>
+        <div>
+          <h2>Global <span class="highlight">Methods</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Manage shop items and categories visible to all players.</p>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.createShopItem(categoryKey, itemKey, item)</div>
+        <p class="method-desc">Create or replace a global shop item. Creates the category if it doesn't exist. Deletes any per-player overrides for the same keys.</p>
+        <div class="tag-row"><span class="badge badge-type">ShopCategoryKey</span><span class="badge badge-type">ShopItemKey</span><span class="badge badge-type">ShopItem</span></div>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.updateShopItem(categoryKey, itemKey, changes)</div>
+        <p class="method-desc">Patch specific properties of an existing global item. Throws if item doesn't exist.</p>
+        <div class="tag-row"><span class="badge badge-type">Partial&lt;ShopItem&gt;</span></div>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.deleteShopItem(categoryKey, itemKey)</div>
+        <p class="method-desc">Delete a global item and ALL per-player overrides for it. Throws if item doesn't exist.</p>
+        <div class="tag-row"><span class="badge" style="background:rgba(239,68,68,0.1);color:var(--danger);">⚠ destructive</span></div>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.configureShopCategory(categoryKey, config)</div>
+        <p class="method-desc">Set display properties on a category (title, sort order, red dot, auto-select, description).</p>
+        <div class="tag-row"><span class="badge badge-type">ShopCategoryConfig</span></div>
+      </div>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// Hide an item then reveal it later</span>
+<span class="fn">api.createShopItem</span>(<span class="str">"myGame:shop"</span>, <span class="str">"secretItem"</span>, {
+  image: <span class="str">"Diamond"</span>,
+  hidden: <span class="kw">true</span>,
+  canBuy: <span class="kw">false</span>
+});
+
+<span class="cmt">// Later, reveal it with a red dot</span>
+<span class="fn">api.updateShopItem</span>(<span class="str">"myGame:shop"</span>, <span class="str">"secretItem"</span>, {
+  hidden: <span class="kw">false</span>,
+  canBuy: <span class="kw">true</span>,
+  redDot: <span class="kw">true</span>
+});</pre>
+    </div>
+
+    <!-- PLAYER METHODS -->
+    <div id="player-methods" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-purple">👤</div>
+        <div>
+          <h2>Per-Player <span class="highlight">Methods</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Override shop items and categories for individual players.</p>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.createShopItemForPlayer(playerId, categoryKey, itemKey, item)</div>
+        <p class="method-desc">Create a fully custom item visible only to this player. Replaces any existing override.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.updateShopItemForPlayer(playerId, categoryKey, itemKey, changes)</div>
+        <p class="method-desc">Update specific properties for one player only. Throws if item doesn't exist globally.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.resetShopItemForPlayer(playerId, categoryKey, itemKey)</div>
+        <p class="method-desc">Remove this player's overrides, reverting them to the global item. Does nothing if no override exists.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-sig">api.configureShopCategoryForPlayer(playerId, categoryKey, config)</div>
+        <p class="method-desc">Set category properties (title, sort, redDot, etc.) for one player.</p>
+      </div>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// VIP players get a discounted price</span>
+<span class="kw">function</span> <span class="fn">applyVIPDiscount</span>(playerId) {
+  <span class="fn">api.updateShopItemForPlayer</span>(playerId, <span class="str">"myGame:weapons"</span>, <span class="str">"legendaryBow"</span>, {
+    cost: <span class="num">500</span>,
+    customTitle: <span class="str">"Legendary Bow (VIP Price!)"</span>,
+    redDot: <span class="kw">true</span>
+  });
+}
+
+<span class="cmt">// New player gets a one-time welcome item</span>
+<span class="fn">api.createShopItemForPlayer</span>(newPlayerId, <span class="str">"myGame:welcome"</span>, <span class="str">"starterPack"</span>, {
+  image: <span class="str">"Chest"</span>,
+  customTitle: <span class="str">"New Player Starter Pack"</span>,
+  description: <span class="str">"A gift just for you!"</span>,
+  cost: <span class="num">0</span>,
+  canBuy: <span class="kw">true</span>
+});</pre>
+    </div>
+
+    <!-- CATEGORY CONFIG -->
+    <div id="category-config" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-orange">📂</div>
+        <div>
+          <h2>Category <span class="highlight">Config</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Control category display, ordering, and behavior.</p>
+        </div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>customTitle</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td>Display name for the category tab</td></tr>
+          <tr><td>autoSelectCategory</td><td><span class="badge badge-type">boolean</span></td><td>Auto-select this tab when the shop opens</td></tr>
+          <tr><td>redDot</td><td><span class="badge badge-type">boolean</span></td><td>Show notification dot on the category tab</td></tr>
+          <tr><td>forceRemoveRedDot</td><td><span class="badge badge-type">boolean</span></td><td>Force-remove red dot from this category</td></tr>
+          <tr><td>sortPriority</td><td><span class="badge badge-type">number</span></td><td>Higher = appears earlier in tab list</td></tr>
+          <tr><td>description</td><td><span class="badge badge-type">string | CustomTextStyling</span></td><td>Category description text</td></tr>
+        </tbody>
+      </table>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.configureShopCategory</span>(<span class="str">"myGame:weapons"</span>, {
+  customTitle: <span class="str">"⚔️ Weapons"</span>,
+  sortPriority: <span class="num">100</span>,
+  autoSelectCategory: <span class="kw">true</span>,
+  redDot: <span class="kw">true</span>
+});
+
+<span class="cmt">// Per-player category config</span>
+<span class="fn">api.configureShopCategoryForPlayer</span>(adminPlayerId, <span class="str">"myGame:admin"</span>, {
+  customTitle: <span class="str">"🔧 Admin Tools"</span>,
+  sortPriority: <span class="num">9999</span>
+});</pre>
+    </div>
+
+    <!-- CALLBACKS -->
+    <div id="callbacks" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-green">🔔</div>
+        <div>
+          <h2><span class="highlight">Callbacks</span></h2>
+          <p class="section-desc" style="margin-bottom:0">React to shop events in your game logic.</p>
+        </div>
+      </div>
+      <h3>onPlayerBoughtShopItem</h3>
+      <p>Fired after a player successfully completes a purchase. This is where all your game logic goes.</p>
+      <table class="param-table">
+        <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>playerId</td><td><span class="badge badge-type">PlayerId</span></td><td>The buying player</td></tr>
+          <tr><td>categoryKey</td><td><span class="badge badge-type">ShopCategoryKey</span></td><td>Category the item is in</td></tr>
+          <tr><td>itemKey</td><td><span class="badge badge-type">ShopItemKey</span></td><td>The item that was bought</td></tr>
+          <tr><td>item</td><td><span class="badge badge-type">BoughtShopItem</span></td><td>Resolved item (overrides applied, internals stripped)</td></tr>
+          <tr><td>userInput</td><td><span class="badge badge-type">string?</span></td><td>The text/selection from userInput if configured</td></tr>
+        </tbody>
+      </table>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+  <span class="kw">switch</span>(itemKey) {
+    <span class="kw">case</span> <span class="str">"healthPotion"</span>:
+      healPlayer(playerId, <span class="num">50</span>);
+      <span class="kw">break</span>;
+
+    <span class="kw">case</span> <span class="str">"renameTribe"</span>:
+      renameTribe(getTribeOf(playerId), userInput);
+      <span class="kw">break</span>;
+
+    <span class="kw">case</span> <span class="str">"sendGift"</span>:
+      <span class="cmt">// userInput is the chosen playerId (player selector)</span>
+      giveItem(userInput, <span class="str">"Diamond"</span>, <span class="num">1</span>);
+      <span class="kw">break</span>;
+  }
+};</pre>
+    </div>
+
+    <!-- OPEN SHOP -->
+    <div id="openShop" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-blue">🔓</div>
+        <div>
+          <h2>openShop <span class="highlight">()</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Programmatically open the shop for a player from your script.</p>
+        </div>
+      </div>
+      <h3>Signature</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.openShop</span>(playerId, toggle, forceCategoryKey, onlyIfNonEmpty)</pre>
+      <table class="param-table">
+        <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>playerId</td><td><span class="badge badge-type">PlayerId</span></td><td>Player to open the shop for</td></tr>
+          <tr><td>toggle</td><td><span class="badge badge-type">boolean?</span></td><td>If true, closes the shop when already open</td></tr>
+          <tr><td>forceCategoryKey</td><td><span class="badge badge-type">PNull&lt;ShopCategoryKey&gt;</span></td><td>Jump directly to a category tab</td></tr>
+          <tr><td>onlyIfNonEmpty</td><td><span class="badge badge-type">boolean?</span></td><td>Only open if the category (or shop) has items</td></tr>
+        </tbody>
+      </table>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// Open shop for a player</span>
+<span class="fn">api.openShop</span>(playerId, <span class="kw">false</span>);
+
+<span class="cmt">// Open directly to the weapons category</span>
+<span class="fn">api.openShop</span>(playerId, <span class="kw">false</span>, <span class="str">"myGame:weapons"</span>);
+
+<span class="cmt">// Toggle the shop open/closed</span>
+<span class="fn">api.openShop</span>(playerId, <span class="kw">true</span>);
+
+<span class="cmt">// Only open if the category has items</span>
+<span class="fn">api.openShop</span>(playerId, <span class="kw">false</span>, <span class="str">"myGame:rewards"</span>, <span class="kw">true</span>);</pre>
+    </div>
+
+    <!-- BUILDER -->
+    <div id="builder" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-green">⚡</div>
+        <div>
+          <h2>Item <span class="highlight">Builder</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Fill in the fields and get ready-to-paste code instantly.</p>
+        </div>
+      </div>
+      <div class="builder-grid">
+        <div class="builder-panel">
+          <h4>Basic Info</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>categoryKey <span class="req">*</span></label>
+              <input type="text" id="b-category" placeholder="myGame:shop" oninput="generate()">
+            </div>
+            <div class="form-group">
+              <label>itemKey <span class="req">*</span></label>
+              <input type="text" id="b-itemkey" placeholder="mySword" oninput="generate()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>image <span class="req">*</span></label>
+            <input type="text" id="b-image" placeholder="Iron Sword  or  spawnicon.png" oninput="generate()">
+          </div>
+          <div class="form-group">
+            <label>customTitle <span class="opt">(optional)</span></label>
+            <input type="text" id="b-title" placeholder="My Sword" oninput="generate()">
+          </div>
+          <div class="form-group">
+            <label>description <span class="opt">(optional)</span></label>
+            <input type="text" id="b-desc" placeholder="A powerful blade." oninput="generate()">
+          </div>
+          <div class="form-group">
+            <label>imageColour <span class="opt">(optional)</span></label>
+            <input type="text" id="b-color" placeholder="springgreen  or  #FF4500" oninput="generate()">
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h4>Pricing & Behavior</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>cost <span class="opt">(optional)</span></label>
+              <input type="number" id="b-cost" placeholder="100" oninput="generate()">
+            </div>
+            <div class="form-group">
+              <label>currency <span class="opt">(optional)</span></label>
+              <input type="text" id="b-currency" placeholder="Gold Coin" oninput="generate()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>amount <span class="opt">(optional)</span></label>
+              <input type="number" id="b-amount" placeholder="1" oninput="generate()">
+            </div>
+            <div class="form-group">
+              <label>sortPriority <span class="opt">(optional)</span></label>
+              <input type="number" id="b-sort" placeholder="10" oninput="generate()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>buyButtonText <span class="opt">(optional)</span></label>
+            <input type="text" id="b-btntext" placeholder="Buy Now" oninput="generate()">
+          </div>
+          <div class="form-group">
+            <label>onBoughtMessage <span class="opt">(optional)</span></label>
+            <input type="text" id="b-msg" placeholder="You got the item!" oninput="generate()">
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:4px;">
+            <label class="checkbox-label"><input type="checkbox" id="b-canbuy" onchange="generate()"> canBuy</label>
+            <label class="checkbox-label"><input type="checkbox" id="b-selected" onchange="generate()"> isSelected</label>
+            <label class="checkbox-label"><input type="checkbox" id="b-reddot" onchange="generate()"> redDot</label>
+            <label class="checkbox-label"><input type="checkbox" id="b-hidden" onchange="generate()"> hidden</label>
+            <label class="checkbox-label"><input type="checkbox" id="b-sell" onchange="generate()"> sell</label>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h4>User Input</h4>
+          <div class="form-group">
+            <label>userInput type</label>
+            <select id="b-inputtype" onchange="toggleInputFields(); generate()">
+              <option value="none">None</option>
+              <option value="text">text</option>
+              <option value="dropdown">dropdown</option>
+              <option value="player">player</option>
+            </select>
+          </div>
+          <div id="input-text-fields" class="input-type-fields">
+            <div class="form-group">
+              <label>placeholderText <span class="opt">(optional)</span></label>
+              <input type="text" id="b-placeholder" placeholder="Enter a name..." oninput="generate()">
+            </div>
+            <label class="checkbox-label" style="margin-bottom:10px;"><input type="checkbox" id="b-wordonly" onchange="generate()"> wordCharsOnly</label>
+          </div>
+          <div id="input-dropdown-fields" class="input-type-fields">
+            <div class="form-group">
+              <label>dropdownOptions (comma-separated)</label>
+              <input type="text" id="b-dropdown" placeholder="Option A, Option B, Option C" oninput="generate()">
+            </div>
+          </div>
+          <div id="input-player-fields" class="input-type-fields">
+            <div class="form-group">
+              <label>excludedPlayers (comma-separated player IDs)</label>
+              <input type="text" id="b-excluded" placeholder="-3, -4" oninput="generate()">
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h4>Badge</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>badge text <span class="opt">(leave empty to omit)</span></label>
+              <input type="text" id="b-badge-text" placeholder="NEW" oninput="generate()">
+            </div>
+            <div class="form-group">
+              <label>badge type</label>
+              <select id="b-badge-type" onchange="generate()">
+                <option value="new">new</option>
+                <option value="lucky">lucky</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="output-panel">
+          <h4>Generated Code</h4>
+          <div id="generatedCode">// Fill in categoryKey, itemKey, and image above to generate code</div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="copyGenerated()">Copy Code</button>
+            <button class="btn btn-secondary" onclick="clearBuilder()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMPLES -->
+    <div id="examples" class="section">
+      <div class="section-header">
+        <div class="section-icon icon-orange">📖</div>
+        <div>
+          <h2>Full <span class="highlight">Examples</span></h2>
+          <p class="section-desc" style="margin-bottom:0">Real-world patterns you can copy and adapt.</p>
+        </div>
+      </div>
+
+      <h3>Tribe Management Shop</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.configureShopCategory</span>(<span class="str">"tribe:manageTribe"</span>, {
+  customTitle: <span class="str">"Manage Tribe"</span>,
+  sortPriority: <span class="num">50</span>
+});
+
+<span class="fn">api.createShopItem</span>(<span class="str">"tribe:manageTribe"</span>, <span class="str">"disbandTribe"</span>, {
+  image: <span class="str">"tribeLeave.png"</span>,
+  customTitle: [{ translationKey: <span class="str">"tribe:disbandTribe"</span> }],
+  description: [{ translationKey: <span class="str">"tribe:disbandTribeDescription"</span> }],
+  buyButtonText: [{ translationKey: <span class="str">"general:disband"</span> }],
+  sortPriority: <span class="num">10</span>,
+  canBuy: <span class="kw">true</span>
+});
+
+<span class="fn">api.createShopItem</span>(<span class="str">"tribe:manageTribe"</span>, <span class="str">"invitePlayer"</span>, {
+  image: <span class="str">"tribeAddPlayer.png"</span>,
+  customTitle: [{ translationKey: <span class="str">"tribe:invitePlayer"</span> }],
+  description: [{ translationKey: <span class="str">"tribe:invitePlayerToTribe"</span> }],
+  buyButtonText: [{ translationKey: <span class="str">"general:invite"</span> }],
+  sortPriority: <span class="num">50</span>,
+  canBuy: <span class="kw">true</span>,
+  userInput: { type: <span class="str">"player"</span>, excludedPlayers: [myPlayerId] }
+});
+
+<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+  <span class="kw">if</span> (itemKey === <span class="str">"disbandTribe"</span>) disbandTribe(playerId);
+  <span class="kw">if</span> (itemKey === <span class="str">"invitePlayer"</span>) inviteToTribe(playerId, userInput);
+};</pre>
+
+      <h3>Create Tribe with Text Input & Rich Button</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.createShopItem</span>(<span class="str">"classicGame:utilities"</span>, <span class="str">"createTribe"</span>, {
+  image: <span class="str">"tribeCreate.png"</span>,
+  customTitle: [{ translationKey: <span class="str">"tribe:createTribe"</span> }],
+  sortPriority: <span class="num">10</span>,
+  canBuy: <span class="kw">true</span>,
+  buyButtonText: [
+    { str: { translationKey: <span class="str">"general:create"</span> } },
+    { str: <span class="str">": "</span> },
+    { icon: <span class="str">"Iron Bar"</span> },
+    { str: <span class="str">" 2"</span> }
+  ],
+  userInput: {
+    type: <span class="str">"text"</span>,
+    placeholderText: <span class="str">"tribe:tribeName"</span>,
+    wordCharsOnly: <span class="kw">true</span>
+  }
+});
+
+<span class="fn">api.onPlayerBoughtShopItem</span> = (playerId, categoryKey, itemKey, item, userInput) => {
+  <span class="kw">if</span> (itemKey === <span class="str">"createTribe"</span>) {
+    createTribe(playerId, userInput); <span class="cmt">// userInput = the tribe name</span>
+  }
+};</pre>
+
+      <h3>Level-Gated Item with Per-Player Unlock</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmt">// Create globally (locked by default)</span>
+<span class="fn">api.createShopItem</span>(<span class="str">"myGame:weapons"</span>, <span class="str">"dragonSword"</span>, {
+  image: <span class="str">"Diamond Sword"</span>,
+  imageColour: <span class="str">"#ff4400"</span>,
+  customTitle: <span class="str">"🐉 Dragon Sword"</span>,
+  description: <span class="str">"Requires level 50 to unlock."</span>,
+  cost: <span class="num">2000</span>,
+  currency: <span class="str">"Gold Coin"</span>,
+  canBuy: <span class="kw">false</span>,
+  sortPriority: <span class="num">5</span>
+});
+
+<span class="cmt">// When a player reaches level 50, unlock it for them</span>
+<span class="kw">function</span> <span class="fn">onPlayerLevelUp</span>(playerId, newLevel) {
+  <span class="kw">if</span> (newLevel >= <span class="num">50</span>) {
+    <span class="fn">api.updateShopItemForPlayer</span>(playerId, <span class="str">"myGame:weapons"</span>, <span class="str">"dragonSword"</span>, {
+      canBuy: <span class="kw">true</span>,
+      description: <span class="str">"You've unlocked this legendary blade!"</span>,
+      redDot: <span class="kw">true</span>
+    });
+  }
+}</pre>
+
+      <h3>Cosmetics Dropdown Shop</h3>
+      <pre><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="fn">api.createShopItem</span>(<span class="str">"myGame:cosmetics"</span>, <span class="str">"hatChoice"</span>, {
+  image: <span class="str">"spawnicon.png"</span>,
+  imageColour: <span class="str">"gold"</span>,
+  customTitle: <span class="str">"Choose a Hat"</span>,
+  description: <span class="str">"Pick your favourite hat style."</span>,
+  cost: <span class="num">250</span>,
+  currency: <span class="str">"Gold Coin"</span>,
+  canBuy: <span class="kw">true</span>,
+  badge: { text: <span class="str">"NEW"</span>, type: <span class="str">"new"</span> },
+  userInput: {
+    type: <span class="str">"dropdown"</span>,
+    dropdownOptions: [<span class="str">"Top Hat"</span>, <span class="str">"Cowboy Hat"</span>, <span class="str">"Crown"</span>, <span class="str">"Beanie"</span>]
+  },
+  onBoughtMessage: <span class="str">"Enjoy your new hat!"</span>
+});</pre>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function show(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function copyCode(btn) {
+    const pre = btn.parentElement;
+    const text = pre.innerText.replace(/^copy\n?/, '');
+    navigator.clipboard.writeText(text.trim());
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  }
+
+  function toggleInputFields() {
+    const type = document.getElementById('b-inputtype').value;
+    document.querySelectorAll('.input-type-fields').forEach(el => el.classList.remove('show'));
+    if (type === 'text') document.getElementById('input-text-fields').classList.add('show');
+    if (type === 'dropdown') document.getElementById('input-dropdown-fields').classList.add('show');
+    if (type === 'player') document.getElementById('input-player-fields').classList.add('show');
+  }
+
+  function escStr(s) { return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
+
+  function generate() {
+    const cat = document.getElementById('b-category').value.trim();
+    const key = document.getElementById('b-itemkey').value.trim();
+    const img = document.getElementById('b-image').value.trim();
+
+    if (!cat || !key || !img) {
+      document.getElementById('generatedCode').textContent = '// Fill in categoryKey, itemKey, and image to generate code';
+      return;
+    }
+
+    let props = { image: img };
+
+    const color = document.getElementById('b-color').value.trim();
+    if (color) props.imageColour = color;
+    const title = document.getElementById('b-title').value.trim();
+    if (title) props.customTitle = title;
+    const desc = document.getElementById('b-desc').value.trim();
+    if (desc) props.description = desc;
+    const cost = document.getElementById('b-cost').value.trim();
+    if (cost !== '') props.cost = parseFloat(cost);
+    const currency = document.getElementById('b-currency').value.trim();
+    if (currency) props.currency = currency;
+    const amount = document.getElementById('b-amount').value.trim();
+    if (amount !== '') props.amount = parseFloat(amount);
+    const sort = document.getElementById('b-sort').value.trim();
+    if (sort !== '') props.sortPriority = parseFloat(sort);
+    const btntext = document.getElementById('b-btntext').value.trim();
+    if (btntext) props.buyButtonText = btntext;
+    const msg = document.getElementById('b-msg').value.trim();
+    if (msg) props.onBoughtMessage = msg;
+
+    if (document.getElementById('b-canbuy').checked) props.canBuy = true;
+    if (document.getElementById('b-selected').checked) props.isSelected = true;
+    if (document.getElementById('b-reddot').checked) props.redDot = true;
+    if (document.getElementById('b-hidden').checked) props.hidden = true;
+    if (document.getElementById('b-sell').checked) props.sell = true;
+
+    const badgeText = document.getElementById('b-badge-text').value.trim();
+    if (badgeText) props.badge = { text: badgeText, type: document.getElementById('b-badge-type').value };
+
+    const inputType = document.getElementById('b-inputtype').value;
+    if (inputType !== 'none') {
+      let ui = { type: inputType };
+      if (inputType === 'text') {
+        const ph = document.getElementById('b-placeholder').value.trim();
+        if (ph) ui.placeholderText = ph;
+        if (document.getElementById('b-wordonly').checked) ui.wordCharsOnly = true;
+      } else if (inputType === 'dropdown') {
+        const opts = document.getElementById('b-dropdown').value.trim();
+        if (opts) ui.dropdownOptions = opts.split(',').map(s => s.trim()).filter(Boolean);
+      } else if (inputType === 'player') {
+        const excl = document.getElementById('b-excluded').value.trim();
+        if (excl) ui.excludedPlayers = excl.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      props.userInput = ui;
+    }
+
+    let lines = [];
+    for (const [k, v] of Object.entries(props)) {
+      let valStr;
+      if (typeof v === 'string') valStr = `"${escStr(v)}"`;
+      else if (typeof v === 'boolean') valStr = String(v);
+      else if (typeof v === 'number') valStr = String(v);
+      else valStr = JSON.stringify(v, null, 2).replace(/\n/g, '\n  ');
+      lines.push(`  ${k}: ${valStr}`);
+    }
+
+    document.getElementById('generatedCode').textContent =
+      `api.createShopItem("${escStr(cat)}", "${escStr(key)}", {\n${lines.join(',\n')}\n});`;
+  }
+
+  function copyGenerated() {
+    const code = document.getElementById('generatedCode').textContent;
+    navigator.clipboard.writeText(code);
+    event.target.textContent = 'Copied!';
+    setTimeout(() => event.target.textContent = 'Copy Code', 1500);
+  }
+
+  function clearBuilder() {
+    document.querySelectorAll('.builder-panel input').forEach(el => {
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+    });
+    document.querySelectorAll('.builder-panel select').forEach(el => el.selectedIndex = 0);
+    document.querySelectorAll('.input-type-fields').forEach(el => el.classList.remove('show'));
+    document.getElementById('generatedCode').textContent = '// Fill in the fields above to generate code';
+  }
+</script>
+</body>
+</html>
